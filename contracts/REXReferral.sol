@@ -100,7 +100,7 @@ contract REXReferral is Ownable {
     }
 
     // Register a user with an affiliate
-    function registerReferredUser(address userAddr, string memory affiliateId) external validAffiliate(affiliateId) notZero(userAddr) {
+    function registerReferredUser(address userAddr, string memory affiliateId) internal validAffiliate(affiliateId) notZero(userAddr) {
         require(isUserOrganic[userAddr] == false, "Already registered organically");
         require(userToAffiliate[userAddr] == 0, "Already registered to affiliate");
         
@@ -112,7 +112,7 @@ contract REXReferral is Ownable {
     }
 
     // Register a user as organic
-    function registerOrganicUser(address userAddr) external notZero(userAddr) {
+    function registerOrganicUser(address userAddr) internal notZero(userAddr) {
         require(userToAffiliate[userAddr] == 0, "Already registered to affiliate");
         isUserOrganic[userAddr] = true;
     }
