@@ -14,12 +14,49 @@ async function main() {
   // await hre.run('compile');
 
   // We get the contract to deploy
-  const Greeter = await hre.ethers.getContractFactory("Greeter");
-  const greeter = await Greeter.deploy("Hello, Hardhat!");
+  const [owner, randomPerson, anotherRandomPerson, randomPerson2] = await hre.ethers.getSigners();
 
-  await greeter.deployed();
+  const RexReferral = await hre.ethers.getContractFactory("REXReferral");
+  const referral = await RexReferral.deploy();
 
-  console.log("Greeter deployed to:", greeter.address);
+  await referral.deployed();
+
+  console.log("Contract deployed to:", referral.address);
+
+  let txn = await referral.applyForAffiliate("Something", "1");
+  await txn.wait();
+  
+  txn = await referral.isAffiliateEnabled("1")
+  // let waited = await txn.wait()
+  console.log("Before verify affliate txn", txn)
+
+  txn = await referral.verifyAffiliate("1")
+  await txn.wait();
+
+  txn = await referral.isAffiliateEnabled("1")
+  console.log("After verify affliate", txn)
+
+  txn = await referral.connect(randomPerson).registerReferredUser(randomPerson.address, "1")
+  await txn.wait();
+
+  myReferral = await referral.affiliates("1")
+  console.log("myReferral totalRef", myReferral.totalRef.toNumber())
+
+  txn = await referral.connect(anotherRandomPerson).registerReferredUser(anotherRandomPerson.address, "1")
+  await txn.wait();
+
+  myReferral = await referral.affiliates("1")
+  console.log("myReferral totalRef", myReferral.totalRef.toNumber())
+
+  organiUser = await referral.isUserOrganic(randomPerson2.address)
+  console.log("Before randomPerson2 is organicUser", organiUser)
+  txn = await referral.connect(randomPerson2).registerOrganicUser(randomPerson2.address)
+  await txn.wait();
+  organiUser = await referral.isUserOrganic(randomPerson2.address)
+  console.log("After randomPerson2 is organicUser", organiUser)
+
+  // txn = await referral.applyForAffiliate("Something", "1");
+  // await txn.wait();
 }
 
 // We recommend this pattern to be able to use async/await everywhere
