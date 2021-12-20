@@ -4,7 +4,7 @@ const { ethers } = require("hardhat");
 describe("REXReferral Contract", function () {
   let RexReferral;
   let referral;
-  let owner;
+  let owner; // eslint-disable-line no-unused-vars
   let addr1;
   let addr2;
   let addrs;
