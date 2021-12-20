@@ -1,8 +1,8 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import {ISuperToken} from "@superfluid-finance/ethereum-contracts/contracts/interfaces/superfluid/ISuperfluid.sol";
-import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import { ISuperToken } from "@superfluid-finance/ethereum-contracts/contracts/interfaces/superfluid/ISuperfluid.sol";
+import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
 import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol";
 import "hardhat/console.sol";
@@ -86,7 +86,6 @@ contract REXSuperSwap {
         // Step 4: Approve and swap
         _performApprovals(_from, _to, fromBase, toBase, pair);
         address[] memory path = new address[](2);
-        // It will try to swap with intermediate pairs if direct pair does not exist
         path[0] = address(fromBase);
         path[1] = address(toBase);
         uint256[] memory swapAmounts;
