@@ -14,7 +14,7 @@ async function main() {
   // await hre.run('compile');
 
   // We get the contract to deploy
-  const Greeter = await hre.ethers.getContractFactory("REXReferral");
+  const Greeter = await hre.ethers.getContractFactory("REXSuperSwap");
   const greeter = await Greeter.deploy("Hello, Hardhat!");
 
   await greeter.deployed();
