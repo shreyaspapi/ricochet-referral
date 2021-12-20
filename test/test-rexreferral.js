@@ -23,7 +23,7 @@ describe("REXReferral Contract", function () {
       const genises = await referral.affiliates(0);
       expect(genises.name).to.equal("Genesis");
       expect(genises.id).to.equal("genesis");
-      expect(genises.enabled).to.be.false;
+      expect(genises.enabled).to.equal(false);
       expect(genises.totalRef).to.equal(0);
       expect(genises.addr).to.equal(
         "0x0000000000000000000000000000000000000000"
@@ -36,7 +36,7 @@ describe("REXReferral Contract", function () {
     const AFFILIATE_ID = "shadow77";
 
     it("Create a new Affiliate", async function () {
-      let tx = await referral.applyForAffiliate(AFFILIATE_NAME, AFFILIATE_ID);
+      const tx = await referral.applyForAffiliate(AFFILIATE_NAME, AFFILIATE_ID);
       await tx.wait();
 
       // Cannot applyForAffiliate again once applied.
@@ -54,7 +54,7 @@ describe("REXReferral Contract", function () {
 
     it("Only contract owner can verifyAffiliate and disableAffiliate", async function () {
       // Only contract owner should be able to call verifyAffiliate and disableAffiliate functions.
-      let REVERTED_MESSAGE = "Ownable: caller is not the owner";
+      const REVERTED_MESSAGE = "Ownable: caller is not the owner";
       await expect(
         referral.connect(addr1).verifyAffiliate(AFFILIATE_ID)
       ).to.be.revertedWith(REVERTED_MESSAGE);
@@ -72,21 +72,21 @@ describe("REXReferral Contract", function () {
 
       // Affiliate should be disabled by default.
       let isAffiliated = await referral.isAffiliateEnabled(AFFILIATE_ID);
-      expect(isAffiliated).to.be.false;
+      expect(isAffiliated).to.equal(false);
 
       // Contract owner can verify Affiliate
       tx = referral.verifyAffiliate(AFFILIATE_ID);
       isAffiliated = await referral.isAffiliateEnabled(AFFILIATE_ID);
-      expect(isAffiliated).to.be.true;
+      expect(isAffiliated).to.equal(true);
 
       // Contract owner can disbale Affiliate
       tx = referral.disableAffiliate(AFFILIATE_ID);
       isAffiliated = await referral.isAffiliateEnabled(AFFILIATE_ID);
-      expect(isAffiliated).to.be.false;
+      expect(isAffiliated).to.equal(false);
     });
 
     it("Check if valid Affliate", async function () {
-      let REVERTED_MESSAGE = "Not a valid affiliate";
+      const REVERTED_MESSAGE = "Not a valid affiliate";
       await expect(referral.verifyAffiliate("Goku")).to.be.revertedWith(
         REVERTED_MESSAGE
       );
@@ -94,20 +94,20 @@ describe("REXReferral Contract", function () {
 
     it("changeAffiliateAddress", async function () {
       const newAddress = addr2.address;
-      let REVERTED_MESSAGE = "Not a valid affiliate";
+      const REVERTED_MESSAGE = "Not a valid affiliate";
 
       // Changing AffiliateAddress without registering as an affiate should be reverted.
       await expect(
         referral.changeAffiliateAddress(newAddress)
       ).to.be.revertedWith(REVERTED_MESSAGE);
 
-      let tx = await referral
+      const tx = await referral
         .connect(addr1)
         .applyForAffiliate(AFFILIATE_NAME, AFFILIATE_ID);
       await tx.wait();
 
       // Before changing Affiliate Address
-      let affiateIndex = await referral.affiliateIdToAffiliate(AFFILIATE_ID);
+      const affiateIndex = await referral.affiliateIdToAffiliate(AFFILIATE_ID);
       let myAffliate = await referral.affiliates(affiateIndex);
       expect(myAffliate.addr).to.equal(addr1.address);
 
@@ -119,14 +119,14 @@ describe("REXReferral Contract", function () {
     });
 
     it("changeAffiliateAddress to zero address", async function () {
-      let tx = await referral
+      const tx = await referral
         .connect(addr1)
         .applyForAffiliate(AFFILIATE_NAME, AFFILIATE_ID);
       await tx.wait();
 
       // New Address cannot be a zero address.
-      let REVERTED_MESSAGE = "Address cannot be 0";
-      let zeroAddress = "0x0000000000000000000000000000000000000000";
+      const REVERTED_MESSAGE = "Address cannot be 0";
+      const zeroAddress = "0x0000000000000000000000000000000000000000";
       await expect(
         referral.connect(addr1).changeAffiliateAddress(zeroAddress)
       ).to.be.revertedWith(REVERTED_MESSAGE);
@@ -148,7 +148,7 @@ describe("REXReferral Contract", function () {
     });
 
     it("withdrawAffiliate only if Affiliate is not yet verified.", async function () {
-      let REVERTED_MESSAGE = "Affiliate is already enabled";
+      const REVERTED_MESSAGE = "Affiliate is already enabled";
 
       let tx = await referral.applyForAffiliate(AFFILIATE_NAME, AFFILIATE_ID);
       await tx.wait();
@@ -168,15 +168,15 @@ describe("REXReferral Contract", function () {
     const AFFILIATE_ID = "shadow77";
 
     it("Do not register Organic user as an ReferredUser", async function () {
-      let REVERTED_MESSAGE = "Already registered organically";
+      const REVERTED_MESSAGE = "Already registered organically";
 
-      let affiliateUser = await referral.applyForAffiliate(
+      const affiliateUser = await referral.applyForAffiliate(
         AFFILIATE_NAME,
         AFFILIATE_ID
       );
       await affiliateUser.wait();
 
-      let organiceUser = await referral.registerOrganicUser(addr2.address);
+      const organiceUser = await referral.registerOrganicUser(addr2.address);
       await organiceUser.wait();
 
       await expect(
@@ -185,9 +185,9 @@ describe("REXReferral Contract", function () {
     });
 
     it("Do not register referred user as Organic user", async function () {
-      let REVERTED_MESSAGE = "Already registered to affiliate";
+      const REVERTED_MESSAGE = "Already registered to affiliate";
 
-      let affiliateUser = await referral.applyForAffiliate(
+      const affiliateUser = await referral.applyForAffiliate(
         AFFILIATE_NAME,
         AFFILIATE_ID
       );
@@ -202,8 +202,8 @@ describe("REXReferral Contract", function () {
     });
 
     it("Do no register user as an ReferredUser if Affiliate not verified.", async function () {
-      let REVERTED_MESSAGE = "Affiliate is not active";
-      let affiliateUser = await referral.applyForAffiliate(
+      const REVERTED_MESSAGE = "Affiliate is not active";
+      const affiliateUser = await referral.applyForAffiliate(
         AFFILIATE_NAME,
         AFFILIATE_ID
       );
@@ -214,14 +214,14 @@ describe("REXReferral Contract", function () {
     });
 
     it("Do not register already referred user as a new referred user.", async function () {
-      let REVERTED_MESSAGE = "Already registered to affiliate";
-      let TEMP_AFFILIATE_ID = "Goku";
+      const REVERTED_MESSAGE = "Already registered to affiliate";
+      const TEMP_AFFILIATE_ID = "Goku";
 
-      let affiliateUser = await referral.applyForAffiliate(
+      const affiliateUser = await referral.applyForAffiliate(
         AFFILIATE_NAME,
         AFFILIATE_ID
       );
-      let affiliateUser2 = await referral
+      const affiliateUser2 = await referral
         .connect(addr2)
         .applyForAffiliate(AFFILIATE_NAME, TEMP_AFFILIATE_ID);
       await affiliateUser.wait();
@@ -245,15 +245,15 @@ describe("REXReferral Contract", function () {
     });
 
     it("register user as an ReferredUser", async function () {
-      let affiliateUser = await referral.applyForAffiliate(
+      const affiliateUser = await referral.applyForAffiliate(
         AFFILIATE_NAME,
         AFFILIATE_ID
       );
       await affiliateUser.wait();
-      tx = await referral.verifyAffiliate(AFFILIATE_ID);
+      const tx = await referral.verifyAffiliate(AFFILIATE_ID);
       await tx.wait();
 
-      let affiateIndex = await referral.affiliateIdToAffiliate(AFFILIATE_ID);
+      const affiateIndex = await referral.affiliateIdToAffiliate(AFFILIATE_ID);
       let affiliate = await referral.affiliates(affiateIndex);
       expect(affiliate.totalRef).to.equal(0);
 
@@ -265,13 +265,13 @@ describe("REXReferral Contract", function () {
       expect(affiliate.totalRef).to.equal(2);
 
       // Check if user succesfully registered
-      let user1 = await referral.userToAffiliate(addr1.address);
+      const user1 = await referral.userToAffiliate(addr1.address);
       expect(user1).to.equal(1);
-      let user2 = await referral.userToAffiliate(addr2.address);
+      const user2 = await referral.userToAffiliate(addr2.address);
       expect(user2).to.equal(1);
 
       // User3 not referred by any Affiliate.
-      let user3 = await referral.userToAffiliate(addrs[1].address);
+      const user3 = await referral.userToAffiliate(addrs[1].address);
       expect(user3).to.equal(0);
     });
   });
@@ -283,47 +283,47 @@ describe("REXReferral Contract", function () {
     it("getAffiliateAddress for organic user", async function () {
       const zeroAddress = "0x0000000000000000000000000000000000000000";
 
-      let organiceUser = await referral.registerOrganicUser(addr1.address);
+      const organiceUser = await referral.registerOrganicUser(addr1.address);
       await organiceUser.wait();
 
-      let userAddress = await referral.getAffiliateAddress(addr1.address);
+      const userAddress = await referral.getAffiliateAddress(addr1.address);
       expect(userAddress).to.equal(zeroAddress);
     });
 
     it("getAffiliateAddress for referred user", async function () {
-      let affiliateUser = await referral.applyForAffiliate(
+      const affiliateUser = await referral.applyForAffiliate(
         AFFILIATE_NAME,
         AFFILIATE_ID
       );
       await affiliateUser.wait();
-      tx = await referral.verifyAffiliate(AFFILIATE_ID);
+      const tx = await referral.verifyAffiliate(AFFILIATE_ID);
       await tx.wait();
 
-      let affiateIndex = await referral.affiliateIdToAffiliate(AFFILIATE_ID);
-      let affiliate = await referral.affiliates(affiateIndex);
+      const affiateIndex = await referral.affiliateIdToAffiliate(AFFILIATE_ID);
+      const affiliate = await referral.affiliates(affiateIndex);
 
-      let newReferredUser = await referral.registerReferredUser(
+      const newReferredUser = await referral.registerReferredUser(
         addr1.address,
         AFFILIATE_ID
       );
       await newReferredUser.wait();
 
-      let referredUser = await referral.getAffiliateAddress(addr1.address);
+      const referredUser = await referral.getAffiliateAddress(addr1.address);
       expect(referredUser).to.equal(affiliate.addr);
     });
 
     it("getAffiliateAddress for disabled Affiliate", async function () {
       const zeroAddress = "0x0000000000000000000000000000000000000000";
-      let affiliateUser = await referral.applyForAffiliate(
+      const affiliateUser = await referral.applyForAffiliate(
         AFFILIATE_NAME,
         AFFILIATE_ID
       );
       await affiliateUser.wait();
 
-      tx = await referral.verifyAffiliate(AFFILIATE_ID);
+      let tx = await referral.verifyAffiliate(AFFILIATE_ID);
       await tx.wait();
 
-      let newReferredUser = await referral.registerReferredUser(
+      const newReferredUser = await referral.registerReferredUser(
         addr1.address,
         AFFILIATE_ID
       );
@@ -332,7 +332,7 @@ describe("REXReferral Contract", function () {
       tx = await referral.disableAffiliate(AFFILIATE_ID);
       await tx.wait();
 
-      let referredUser = await referral.getAffiliateAddress(addr1.address);
+      const referredUser = await referral.getAffiliateAddress(addr1.address);
       expect(referredUser).to.equal(zeroAddress);
     });
   });
